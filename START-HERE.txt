@@ -1,0 +1,26 @@
+FULL PROJECT - READY TO RUN (Windows, VS Code)
+
+1. Unzip, then in VS Code: File > Open Folder > choose the "reservation-system" folder.
+
+2. Open the file named ".env" and replace YOUR_PASSWORD with your PostgreSQL password. Save it.
+   (If your password has symbols like @ or # tell me, they need special encoding.)
+
+3. Install the packages ONE time. Open a terminal (Terminal > New Terminal) and run:
+       npm install
+   This takes a few minutes.
+   SHORTCUT: if your older project already has a node_modules folder, copy that folder into this one
+   and skip this step.
+
+4. Start the app:
+       npm run dev
+   This one command also creates the database, sets up the tables, and adds demo data.
+
+5. Open http://localhost:3000 and sign in:
+       Admin:  admin@example.com / admin123
+       Member: member@example.com / member123
+
+Notes
+- PostgreSQL must be installed and running (it starts automatically after installation).
+- If PowerShell says "running scripts is disabled", run once:
+       Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
+- The first start can take 20 to 40 seconds while it prepares the database.
