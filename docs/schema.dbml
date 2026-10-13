@@ -1,0 +1,56 @@
+// Paste this into https://dbdiagram.io to draw the ER diagram and get a share link.
+Table users {
+  id text [pk]
+  name text [not null]
+  email text [unique, not null]
+  passwordHash text [not null, note: 'scrypt salt:hash, never the plain password']
+  role Role [not null, default: 'MEMBER']
+  createdAt timestamptz [not null]
+}
+
+Table resource_types {
+  id text [pk]
+  name text [unique, not null]
+}
+
+Table resources {
+  id text [pk]
+  resourceTypeId text [not null, ref: > resource_types.id]
+  name text [not null]
+  description text
+  location text
+  capacity int
+  amenities text
+  isActive boolean [not null, default: true]
+  createdAt timestamptz [not null]
+}
+
+Table reservations {
+  id text [pk]
+  resourceId text [not null, ref: > resources.id]
+  userId text [not null, ref: > users.id]
+  title text [not null]
+  startTime timestamptz [not null]
+  endTime timestamptz [not null]
+  status ReservationStatus [not null, default: 'CONFIRMED']
+  seriesId text [note: 'shared by all occurrences of a repeating booking']
+  createdAt timestamptz [not null]
+}
+
+Table activity_logs {
+  id text [pk]
+  userId text [ref: > users.id]
+  action text [not null]
+  details text [not null]
+  createdAt timestamptz [not null]
+}
+
+Enum Role {
+  ADMIN
+  MEMBER
+}
+
+Enum ReservationStatus {
+  CONFIRMED
+  CANCELLED
+}

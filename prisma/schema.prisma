@@ -1,0 +1,85 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  ADMIN
+  MEMBER
+}
+
+enum ReservationStatus {
+  CONFIRMED
+  CANCELLED
+}
+
+model User {
+  id           String        @id @default(uuid())
+  name         String
+  email        String        @unique
+  passwordHash String        @default("")
+  role         Role          @default(MEMBER)
+  createdAt    DateTime      @default(now()) @db.Timestamptz(6)
+  reservations Reservation[]
+  activities   ActivityLog[]
+
+  @@map("users")
+}
+
+model ResourceType {
+  id        String     @id @default(uuid())
+  name      String     @unique
+  resources Resource[]
+
+  @@map("resource_types")
+}
+
+model Resource {
+  id             String        @id @default(uuid())
+  resourceTypeId String
+  name           String
+  description    String?
+  location       String?
+  capacity       Int?
+  amenities      String?
+  isActive       Boolean       @default(true)
+  createdAt      DateTime      @default(now()) @db.Timestamptz(6)
+  resourceType   ResourceType  @relation(fields: [resourceTypeId], references: [id])
+  reservations   Reservation[]
+
+  @@map("resources")
+}
+
+model Reservation {
+  id         String            @id @default(uuid())
+  resourceId String
+  userId     String
+  title      String
+  startTime  DateTime          @db.Timestamptz(6)
+  endTime    DateTime          @db.Timestamptz(6)
+  status     ReservationStatus @default(CONFIRMED)
+  seriesId   String?
+  createdAt  DateTime          @default(now()) @db.Timestamptz(6)
+  resource   Resource          @relation(fields: [resourceId], references: [id])
+  user       User              @relation(fields: [userId], references: [id])
+
+  @@index([resourceId, startTime])
+  @@index([seriesId])
+  @@map("reservations")
+}
+
+model ActivityLog {
+  id        String   @id @default(uuid())
+  userId    String?
+  action    String
+  details   String
+  createdAt DateTime @default(now()) @db.Timestamptz(6)
+  user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([createdAt])
+  @@map("activity_logs")
+}
